@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="money honey">
 <meta name="theme-color" content="#f2ede4">
-<title>what ’bout money honey?</title>
+<title>dinero · panorama personal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -140,6 +140,47 @@ h2{font-weight:400;font-size:clamp(40px,9vw,58px);line-height:.85;letter-spacing
  .in.money,.in.reserve{width:76px}
 }
 
+
+/* clean editorial refresh */
+:root{--paper:#faf9f6;--ink:#24231f;--mute:#77756e;--hair:rgba(36,35,31,.16);--green:#647765;--red:#a45f55}
+body{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:13px;line-height:1.5;background:#faf9f6}
+h1,h2,.account-name,.account-total,.available-number,.month-head strong,.ob-name,.income-line .name,.sum .v,#sheet h3{font-family:var(--serif)}
+.page{max-width:800px;padding-top:28px}
+.date{border-color:var(--hair);margin-bottom:26px}
+h1{font-size:clamp(48px,10vw,76px);line-height:.82}
+.tagline{font-family:var(--serif);font-size:19px;color:var(--mute)}
+nav{border-color:var(--hair);gap:34px;margin-bottom:30px}
+nav button{font-size:10px;letter-spacing:.12em}
+.dash-grid{grid-template-columns:1fr;gap:14px}
+.editorial-card{border:0;border-radius:3px;background:#f0eee8;padding:22px}
+.card-title{font-size:10px;letter-spacing:.15em;color:var(--mute)}
+.account-row{display:grid;grid-template-columns:1fr auto;align-items:center;padding:12px 0;margin:0;border-bottom:1px solid var(--hair)}
+.account-top{grid-column:1}.account-name{font-size:23px}.account-total{grid-column:2;grid-row:1/3;margin:0;font-size:28px;text-align:right}
+.account-sub{grid-column:1;font-size:11px}.account-actions{grid-column:1;grid-row:2;flex-direction:row;margin-top:5px}
+.available-block{background:#e5e9e2;margin:20px -22px -22px;padding:18px 22px;border:0;display:grid;grid-template-columns:1fr auto;align-items:end;gap:3px 10px}
+.available-label{grid-column:1;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#566657}
+.available-number{grid-column:1;grid-row:2;font-size:clamp(36px,7vw,54px);margin:0;color:#29372d}
+.available-note{grid-column:2;grid-row:2;text-align:right;max-width:130px;line-height:1.5}
+.rate-line{grid-column:1/-1;margin-top:12px}
+.total-block{padding:18px 22px;background:#24231f;color:#faf9f6;border-radius:3px;margin-bottom:14px}
+.total-block .total-label{font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:#c7c3b9}
+.total-block .total-value{font:clamp(38px,8vw,58px)/1 var(--serif);margin-top:6px}
+.sec-h{border-color:var(--hair);margin-bottom:10px}h2{font-size:clamp(42px,9vw,58px)}
+.intro{font-family:var(--serif);font-size:18px;line-height:1.35;color:#666158}
+.month-card{border:0;border-radius:4px;padding:19px 20px 16px;margin:12px 0;background:#edf0eb}
+.month-card:nth-of-type(2){background:#eaf0f3}.month-card:nth-of-type(3){background:#f2efe2}.month-card:nth-of-type(4){background:#f2e9e6}
+.month-head{margin-bottom:9px}.month-head strong{font-size:30px}.month-head span{font-size:9px}
+.month-summary{font-family:var(--mono);font-style:normal;font-size:11px;color:var(--ink)}
+.month-card>.bar{height:5px;margin:9px 0 12px}
+.obligation{border-top:1px solid rgba(36,35,31,.13);padding:12px 0 9px}
+.ob-name{font-size:21px}.ob-edit{gap:7px 9px}.ob-edit label{font-size:9px}
+.in.money,.in.reserve{width:88px}.in.name{font-size:18px}
+.ob-bar{height:3px}.add{font-size:10px;color:var(--ink);padding:14px 0 3px}
+.item{padding:15px 0;border-color:var(--hair)}.income-line{grid-template-columns:minmax(90px,1fr) auto auto 25px;gap:10px}
+.income-line .name{font-size:21px}.income-meta{font-size:11px}.income-meta .in{font-size:14px}
+.sum{border-color:var(--hair)}.sum .v{font-size:28px}
+.x{font-family:var(--mono);font-size:18px}.note{font-family:var(--serif);font-size:16px}
+@media(max-width:620px){.page{padding-left:16px;padding-right:16px}.available-block{display:grid}.available-number{grid-column:1;grid-row:2;text-align:left}.available-note{grid-column:2;grid-row:2}.editorial-card{padding:18px}.available-block{margin:18px -18px -18px;padding:17px 18px}}
 </style>
 </head>
 <body>
@@ -148,7 +189,7 @@ h2{font-weight:400;font-size:clamp(40px,9vw,58px);line-height:.85;letter-spacing
     <p class="date kicker" id="fecha"></p>
     <div class="masthead">
       <h1>what ’bout<br><em>money honey?</em></h1>
-      <span class="kicker" style="padding-top:12px;color:var(--red)">♡</span>
+      
     </div>
     <p class="tagline">tu panorama financiero, en una mirada.</p>
     <nav>
@@ -187,20 +228,16 @@ const monthKey=(offset=0)=>{const d=new Date(now.getFullYear(),now.getMonth()+of
 const monthLabel=key=>{const [y,m]=key.split('-').map(Number);return `${MESES[m-1]} ${y}`};
 const monthShort=key=>{const [y,m]=key.split('-').map(Number);return `${MESES[m-1]} ${String(y).slice(2)}`};
 const monthStart=1;
-function makeMonths(){
-  const out=[];
-  for(let i=1;i<=12;i++){
-    const key=monthKey(i);
-    const obligations=[
-      {id:uid(),name:'alquiler',amount:412000,reserved:i===1?412000:0,source:'mp'},
-      {id:uid(),name:'servicios',amount:100000,reserved:0,source:'mp'},
-      {id:uid(),name:'expensas',amount:90000,reserved:i<=3?90000:0,source:'ef'},
-      {id:uid(),name:'comida',amount:80000,reserved:0,source:'mp'}
-    ];
-    out.push({key,obligations});
-  }
-  return out;
+function makeMonth(key, isCurrent=false){
+  return {key,obligations:[
+    {id:uid(),name:'alquiler',amount:412000,reserved:isCurrent?412000:0,source:'mp'},
+    {id:uid(),name:'servicios',amount:100000,reserved:isCurrent?100000:0,source:'mp'},
+    {id:uid(),name:'expensas',amount:90000,reserved:isCurrent?90000:0,source:'ef'},
+    {id:uid(),name:'comida',amount:80000,reserved:isCurrent?40000:0,source:'mp'}
+  ]};
 }
+function makeMonths(){return Array.from({length:4},(_,i)=>makeMonth(monthKey(i),i===0));}
+
 const DEF={
   accounts:{mp:{amount:413000,last:null},pp:{amount:654,last:null},ef:{amount:360000,last:null}},
   rate:1500,months:makeMonths(),
@@ -217,6 +254,8 @@ const DEF={
 let S=null;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!S.accounts||!S.months||!S.incomes) S=JSON.parse(JSON.stringify(DEF));
+// Keep exactly the current month and the following three, preserving saved data when possible.
+{const old=Array.isArray(S.months)?S.months:[];S.months=Array.from({length:4},(_,i)=>{const key=monthKey(i);return old.find(m=>m.key===key)||makeMonth(key,i===0);});}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const ACC={mp:{name:'Mercado Pago',cur:'ARS'},ef:{name:'Efectivo',cur:'ARS'},pp:{name:'PayPal',cur:'USD'}};
 const nf=(n,d=0)=>Number(n||0).toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:d});
@@ -238,6 +277,7 @@ const reservedForMonth=m=>m.obligations.reduce((a,o)=>a+(Number(o.reserved)||0),
 const allocation=k=>S.months.reduce((a,m)=>a+m.obligations.reduce((b,o)=>b+(o.source===k?(Number(o.reserved)||0):0),0),0);
 const free=k=>S.accounts[k].amount-allocation(k);
 const freePersonal=()=>free('mp')+free('ef');
+const totalMoney=()=>S.accounts.mp.amount+S.accounts.ef.amount+(S.accounts.pp.amount*S.rate);
 const coverage=m=>totalForMonth(m)>0?Math.min(1,reservedForMonth(m)/totalForMonth(m)):0;
 const fullMonths=()=>{let n=0;for(const m of S.months){if(coverage(m)>=.999999)n++;else break;}return n};
 const pctToSpend=()=>{const n=fullMonths();return n===0?0:n===1?.10:n===2?.20:.10};
@@ -259,83 +299,56 @@ function accountHTML(k){
   </div>`;
 }
 function renderAhora(){
-  const A=S.accounts,available=freePersonal(),next=S.months[0];
-  const visibleMonths=S.months.slice(0,3);
-  const summaryObligations=[];
-  visibleMonths.forEach(m=>m.obligations.forEach(o=>{
-    if(o.reserved>0 || m===next) summaryObligations.push({m,o});
-  }));
+  const available=freePersonal();
   $('#ahora').innerHTML=`
-    <div class="dash-grid">
-      <section class="editorial-card">
-        <h2 class="card-title">tus cuentas</h2>
-        ${accountHTML('mp')}
-        ${accountHTML('ef')}
-        ${accountHTML('pp')}
-        <div class="available-block">
-          <p class="available-label">tu dinero disponible</p>
-          <p class="available-number">${money(Math.max(0,available))}</p>
-          <p class="available-note">libre · mp + efectivo</p>
-          <p class="rate-line">dólar de referencia: <button data-rate>${ars(S.rate)}</button></p>
-        </div>
-      </section>
-      <section class="editorial-card">
-        <h2 class="card-title">tus reservas por mes</h2>
-        ${summaryObligations.map(({m,o})=>{
-          const p=o.amount>0?Math.min(1,o.reserved/o.amount):0;
-          return `<div class="reserve-line">
-            <div class="reserve-top"><span class="reserve-name">${cap(o.name)} <span style="font-style:italic;color:var(--mute);font-size:13px">${MESES[Number(m.key.slice(5))-1]}</span></span><span class="reserve-amount">${ars(o.reserved)} / ${ars(o.amount)}</span></div>
-            <div class="bar ${p<1?'warn':''}"><i style="width:${p*100}%"></i></div>
-            <div class="reserve-foot"><span>${p>=1?'cubierto':'por cubrir'}</span><span>${pct(p)}</span></div>
-          </div>`;
-        }).join('')}
-        <div class="reserve-footer"><span>referencia mensual</span><span>${ars(next?totalForMonth(next):682000)}</span></div>
-        <div class="reserve-footer" style="border-top:0;margin-top:7px;padding-top:0">
-          <span>planificá tus próximos meses</span><button data-tab="reservas">ver todos los gastos ↗</button>
-        </div>
-      </section>
-    </div>`;
+    <div class="total-block"><p class="total-label">dinero total</p><p class="total-value">${ars(totalMoney())}</p></div>
+    <div class="dash-grid"><section class="editorial-card">
+      <h2 class="card-title">tus cuentas</h2>
+      ${accountHTML('mp')}${accountHTML('ef')}${accountHTML('pp')}
+      <div class="available-block"><p class="available-label">usá chill de cojones</p>
+        <p class="available-number">${ars(Math.max(0,available))}</p>
+        <p class="available-note">plata libre para tus gastos, sin tocar lo reservado</p>
+        <p class="rate-line">dólar de referencia: <button data-rate>${ars(S.rate)}</button></p>
+      </div>
+    </section></div>`;
 }
+
 function obligationHTML(m,o){
   const p=o.amount>0?Math.min(1,o.reserved/o.amount):0;
   return `<div class="obligation" data-month="${m.key}" data-ob="${o.id}">
-    <div class="ob-top"><span class="ob-name">${esc(o.name)}</span><button class="x" data-del-ob aria-label="eliminar obligación">×</button></div>
-    <div class="ob-edit">
-      <label>necesitás $</label><input class="in money" data-obfield="amount" value="${nf(o.amount)}" inputmode="decimal" aria-label="monto necesario">
-      <label>reservado $</label><input class="in reserve" data-obfield="reserved" value="${nf(o.reserved)}" inputmode="decimal" aria-label="monto reservado">
-      <select class="source" data-obfield="source" aria-label="cuenta de reserva">
-        <option value="mp" ${o.source==='mp'?'selected':''}>mercado pago</option>
-        <option value="ef" ${o.source==='ef'?'selected':''}>efectivo</option>
-      </select>
-    </div>
-    <div class="ob-bar ${p<1?'warn':''}"><i style="width:${p*100}%"></i></div>
+    <div class="ob-top"><input class="in name ob-name" data-obfield="name" value="${esc(o.name)}" aria-label="nombre del gasto"><button class="x" data-del-ob aria-label="eliminar gasto">×</button></div>
+    <div class="ob-edit"><label>total $</label><input class="in money" data-obfield="amount" value="${nf(o.amount)}" inputmode="decimal" aria-label="monto total">
+      <label>abonado $</label><input class="in reserve" data-obfield="reserved" value="${nf(o.reserved)}" inputmode="decimal" aria-label="monto abonado">
+      <select class="source" data-obfield="source" aria-label="cuenta"><option value="mp" ${o.source==='mp'?'selected':''}>mercado pago</option><option value="ef" ${o.source==='ef'?'selected':''}>efectivo</option></select>
+      <span class="status">${pct(p)} abonado</span>
+    </div><div class="ob-bar ${p<1?'warn':''}"><i style="width:${p*100}%"></i></div>
   </div>`;
 }
+
 function renderReservas(){
-  $('#reservas').innerHTML=`
-    <header class="sec-h"><h2>Gastos</h2><em>mes a mes</em></header>
-    <p class="intro">Planificá cada gasto según su destino. Lo reservado deja de estar disponible para tus gastos personales. Las barras muestran cuánto falta para financiar cada mes.</p>
+  $('#reservas').innerHTML=`<header class="sec-h"><h2>Gastos</h2><em>noviembre — febrero</em></header>
+    <p class="intro">Cada mes reúne los gastos previstos y cuánto ya abonaste. Podés cambiar importes, nombres y sumar o quitar conceptos.</p>
     ${S.months.map(m=>`<section class="month-card" data-month-card="${m.key}">
-      <div class="month-head"><strong>${cap(monthLabel(m.key))}</strong><span>${coverage(m)>=.999999?'mes cubierto':'en construcción'}</span></div>
-      <div class="month-summary"><span>${ars(reservedForMonth(m))} / ${ars(totalForMonth(m))}</span><span>${pct(coverage(m))}</span></div>
+      <div class="month-head"><strong>${cap(monthLabel(m.key))}</strong><span>${pct(coverage(m))} cubierto</span></div>
+      <div class="month-summary"><span>abonado ${ars(reservedForMonth(m))} de ${ars(totalForMonth(m))}</span><span>resta ${ars(Math.max(0,totalForMonth(m)-reservedForMonth(m)))}</span></div>
       <div class="bar ${coverage(m)<1?'warn':''}"><i style="width:${coverage(m)*100}%"></i></div>
       ${m.obligations.map(o=>obligationHTML(m,o)).join('')}
-      <button class="add" data-new-ob="${m.key}">+ agregar obligación</button>
-    </section>`).join('')}
-    <p class="note">La referencia mensual actual es de ${ars(682000)}: alquiler, servicios, expensas y comida. Podés editar cualquier importe o agregar otros gastos.</p>`;
+      <button class="add" data-new-ob="${m.key}">+ agregar gasto</button>
+    </section>`).join('')}`;
 }
+
 function incomeHTML(x){
   const destOpts=[['mp','mercado pago'],['ef','efectivo'],['pp','paypal']];
   return `<div class="item" data-income="${x.id}">
     <div class="income-line">
       <input class="in name" data-if="name" value="${esc(x.name)}" aria-label="cliente">
       <button class="currency" data-currency>${x.cur==='USD'?'US$':'$'}</button>
-      <input class="in amount-in" data-if="amount" value="${nf(x.amount,2)}" inputmode="decimal" aria-label="importe" ${x.received?'disabled':''}>
+      <input class="in amount-in" data-if="amount" value="${nf(x.amount,2)}" inputmode="decimal" aria-label="importe">
       <button class="x" data-del-income aria-label="eliminar ingreso">×</button>
     </div>
     <div class="income-meta">
       <input class="in" data-if="month" value="${esc(x.month)}" aria-label="mes o concepto">
-      <select data-if="dest" aria-label="cuenta donde ingresa" ${x.received?'disabled':''}>${destOpts.map(([v,l])=>`<option value="${v}" ${x.dest===v?'selected':''}>${l}</option>`).join('')}</select>
+      <select data-if="dest" aria-label="cuenta donde ingresa">${destOpts.map(([v,l])=>`<option value="${v}" ${x.dest===v?'selected':''}>${l}</option>`).join('')}</select>
       <span class="status ${x.received?'received':''}">${x.received?'cobrado':'pendiente'}</span>
       <button class="collect ${x.received?'done':''}" data-collect>${x.received?'deshacer':'cobrar'}</button>
     </div>
@@ -344,9 +357,9 @@ function incomeHTML(x){
 function renderIngresos(){
   $('#ingresos').innerHTML=`
     <header class="sec-h"><h2>Ingresos</h2><em>previstos / reales</em></header>
-    <p class="intro">Un ingreso pendiente no cuenta como dinero disponible. Cuando lo cobres, tocá “cobrar” y se suma al saldo de la cuenta elegida.</p>
-    ${S.incomes.map(incomeHTML).join('')}
+    <p class="intro">Ingresos previstos y cobrados, por separado. Editá cada dato, eliminá registros o sumá ingresos extra cuando quieras.</p>
     <button class="add" data-new-income>+ agregar ingreso</button>
+    ${S.incomes.map(incomeHTML).join('')}
     <div class="sum"><span class="kicker">pendiente en pesos</span><span class="v">${ars(pendingTotal('ARS'))}</span></div>
     <div class="sum"><span class="kicker">pendiente en dólares</span><span class="v">${usd(pendingTotal('USD'))}</span></div>
     <div class="sum"><span class="kicker">ya cobrado · pesos</span><span class="v">${ars(receivedTotal('ARS'))}</span></div>
@@ -364,7 +377,7 @@ function refreshMonth(key){
   const p=coverage(m),bar=card.querySelector(':scope > .bar'),summary=card.querySelector('.month-summary'),head=card.querySelector('.month-head span');
   if(bar){bar.classList.toggle('warn',p<1);bar.querySelector('i').style.width=`${p*100}%`;}
   if(summary)summary.innerHTML=`<span>${ars(reservedForMonth(m))} / ${ars(totalForMonth(m))}</span><span>${pct(p)}</span>`;
-  if(head)head.textContent=p>=.999999?'mes cubierto':'en construcción';
+  if(head)head.textContent=`${pct(p)} cubierto`;
 }
 function findIncome(el){const r=el.closest('.item[data-income]');return r&&S.incomes.find(x=>x.id===r.dataset.income)}
 document.addEventListener('input',e=>{
@@ -372,12 +385,12 @@ document.addEventListener('input',e=>{
   if(ob){
     const card=ob.closest('[data-month]'),m=S.months.find(x=>x.key===card.dataset.month),o=m&&m.obligations.find(x=>x.id===card.dataset.ob);
     if(!o)return;
-    if(ob.dataset.obfield!=='source'){const n=parse(ob.value);o[ob.dataset.obfield]=n===null?0:n;}
+    if(ob.dataset.obfield==='name'){o.name=ob.value;}else if(ob.dataset.obfield!=='source'){const n=parse(ob.value);o[ob.dataset.obfield]=n===null?0:n;}
     save();refreshMonth(m.key);refreshDashboard();return;
   }
   if(inc){
     const x=findIncome(inc);if(!x)return;
-    if(inc.dataset.if==='amount'&&!x.received){const n=parse(inc.value);x.amount=n===null?0:n;}
+    if(inc.dataset.if==='amount'){const n=parse(inc.value);const next=n===null?0:n;if(x.received)S.accounts[x.dest].amount+=next-x.amount;x.amount=next;}
     if(inc.dataset.if==='name')x.name=inc.value;
     if(inc.dataset.if==='month')x.month=inc.value;
     save();return;
@@ -391,8 +404,14 @@ document.addEventListener('change',e=>{
     return;
   }
   const dest=e.target.closest('[data-if="dest"]');
-  if(dest){const x=findIncome(dest);if(x&&!x.received){x.dest=dest.value;save();}}
+  if(dest){const x=findIncome(dest);if(x){if(x.received){S.accounts[x.dest].amount-=x.amount;S.accounts[dest.value].amount+=x.amount;}x.dest=dest.value;save();renderAhora();}}
 });
+
+document.addEventListener('change',e=>{
+  if(e.target.matches('[data-obfield]')){save();renderReservas();renderAhora();}
+  if(e.target.matches('[data-if]')){save();renderIngresos();renderAhora();}
+});
+
 let cfg=null;const fAmt=$('#f-amt'),fDest=$('#f-dest');
 function openSheet(c){
   cfg=c;$('#sh-kicker').textContent=c.kicker||'';$('#sh-title').textContent=c.title;
@@ -433,7 +452,7 @@ document.addEventListener('click',e=>{
   }
   if('newIncome'in d){S.incomes.push({id:uid(),name:'nuevo cliente',month:'',amount:0,cur:'ARS',received:false,dest:'mp'});save();renderIngresos();}
   if('delIncome'in d){const x=findIncome(t);if(x){if(x.received)S.accounts[x.dest].amount-=x.amount;S.incomes=S.incomes.filter(i=>i.id!==x.id);save();render();}}
-  if('currency'in d){const x=findIncome(t);if(x&&!x.received){x.cur=x.cur==='USD'?'ARS':'USD';x.dest=x.cur==='USD'?'pp':'mp';save();renderIngresos();}}
+  if('currency'in d){const x=findIncome(t);if(x){if(x.received)S.accounts[x.dest].amount-=x.amount;x.cur=x.cur==='USD'?'ARS':'USD';x.dest=x.cur==='USD'?'pp':'mp';if(x.received)S.accounts[x.dest].amount+=x.amount;save();render();}}
   if('collect'in d){
     const x=findIncome(t);if(!x)return;
     if(!x.received){S.accounts[x.dest].amount+=x.amount;x.received=true;x.receivedAt=Date.now();}
