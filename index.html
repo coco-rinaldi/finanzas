@@ -156,7 +156,7 @@ nav button{font-size:10px;letter-spacing:.12em}
 .card-title{font-size:10px;letter-spacing:.15em;color:var(--mute)}
 .account-row{display:grid;grid-template-columns:1fr auto;align-items:center;padding:12px 0;margin:0;border-bottom:1px solid var(--hair)}
 .account-top{grid-column:1}.account-name{font-size:23px}.account-total{grid-column:2;grid-row:1/3;margin:0;font-size:28px;text-align:right}
-.account-sub{grid-column:1;font-size:11px}.account-actions{grid-column:1;grid-row:2;flex-direction:row;margin-top:5px}
+.account-sub{grid-column:1;font-size:11px}.reserve-account-value{font:inherit;text-decoration:underline dotted;text-underline-offset:3px}.account-actions{grid-column:1;grid-row:2;flex-direction:row;margin-top:5px}
 .available-block{background:#e5e9e2;margin:20px -22px -22px;padding:18px 22px;border:0;display:grid;grid-template-columns:1fr auto;align-items:end;gap:3px 10px}
 .available-label{grid-column:1;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#566657}
 .available-number{grid-column:1;grid-row:2;font-size:clamp(36px,7vw,54px);margin:0;color:#29372d}
@@ -256,6 +256,8 @@ try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!S.accounts||!S.months||!S.incomes) S=JSON.parse(JSON.stringify(DEF));
 // Keep exactly the current month and the following three, preserving saved data when possible.
 {const old=Array.isArray(S.months)?S.months:[];S.months=Array.from({length:4},(_,i)=>{const key=monthKey(i);return old.find(m=>m.key===key)||makeMonth(key,i===0);});}
+// Initialize editable account reserves from the existing expense allocations.
+for(const k of ['mp','ef','pp']) if(S.accounts[k].reserved==null) S.accounts[k].reserved=S.months.reduce((a,m)=>a+m.obligations.reduce((b,o)=>b+(o.source===k?(Number(o.reserved)||0):0),0),0);
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const ACC={mp:{name:'Mercado Pago',cur:'ARS'},ef:{name:'Efectivo',cur:'ARS'},pp:{name:'PayPal',cur:'USD'}};
 const nf=(n,d=0)=>Number(n||0).toLocaleString('es-AR',{minimumFractionDigits:0,maximumFractionDigits:d});
@@ -274,7 +276,7 @@ function parse(str){
 }
 const totalForMonth=m=>m.obligations.reduce((a,o)=>a+(Number(o.amount)||0),0);
 const reservedForMonth=m=>m.obligations.reduce((a,o)=>a+(Number(o.reserved)||0),0);
-const allocation=k=>S.months.reduce((a,m)=>a+m.obligations.reduce((b,o)=>b+(o.source===k?(Number(o.reserved)||0):0),0),0);
+const allocation=k=>Number(S.accounts[k].reserved??S.months.reduce((a,m)=>a+m.obligations.reduce((b,o)=>b+(o.source===k?(Number(o.reserved)||0):0),0),0));
 const free=k=>S.accounts[k].amount-allocation(k);
 const freePersonal=()=>free('mp')+free('ef');
 const totalMoney=()=>S.accounts.mp.amount+S.accounts.ef.amount+(S.accounts.pp.amount*S.rate);
@@ -291,7 +293,7 @@ function accountHTML(k){
   return `<div class="account-row">
     <div class="account-top"><span class="account-name">${c.name}</span></div>
     <div class="account-total">${money(a.amount,c.cur)}</div>
-    <div class="account-sub">${sub}</div>
+    <div class="account-sub">reservado <button class="reserve-account-value" data-edit-reserved="${k}">${ars(r)}</button> · libre ${ars(f)}</div>
     <div class="account-actions">
       <button class="small-action" data-edit="${k}">editar saldo</button>
       <button class="small-action" data-add="${k}">+ sumar</button>
@@ -385,7 +387,7 @@ document.addEventListener('input',e=>{
   if(ob){
     const card=ob.closest('[data-month]'),m=S.months.find(x=>x.key===card.dataset.month),o=m&&m.obligations.find(x=>x.id===card.dataset.ob);
     if(!o)return;
-    if(ob.dataset.obfield==='name'){o.name=ob.value;}else if(ob.dataset.obfield!=='source'){const n=parse(ob.value);o[ob.dataset.obfield]=n===null?0:n;}
+    if(ob.dataset.obfield==='name'){o.name=ob.value;}else if(ob.dataset.obfield!=='source'){const n=parse(ob.value);const next=n===null?0:n;if(ob.dataset.obfield==='reserved'){const delta=next-(Number(o.reserved)||0);S.accounts[o.source].reserved=Math.max(0,(Number(S.accounts[o.source].reserved)||0)+delta);}o[ob.dataset.obfield]=next;}
     save();refreshMonth(m.key);refreshDashboard();return;
   }
   if(inc){
@@ -400,7 +402,7 @@ document.addEventListener('change',e=>{
   const ob=e.target.closest('[data-obfield="source"]');
   if(ob){
     const card=ob.closest('[data-month]'),m=S.months.find(x=>x.key===card.dataset.month),o=m&&m.obligations.find(x=>x.id===card.dataset.ob);
-    if(o){o.source=ob.value;save();refreshDashboard();}
+    if(o){const amount=Number(o.reserved)||0;S.accounts[o.source].reserved=Math.max(0,(Number(S.accounts[o.source].reserved)||0)-amount);S.accounts[ob.value].reserved=(Number(S.accounts[ob.value].reserved)||0)+amount;o.source=ob.value;save();refreshDashboard();}
     return;
   }
   const dest=e.target.closest('[data-if="dest"]');
@@ -441,6 +443,9 @@ document.addEventListener('click',e=>{
   if(d.edit){
     const k=d.edit;openSheet({kicker:ACC[k].name,title:'Corregir saldo total',amount:S.accounts[k].amount,onSave:v=>{S.accounts[k].amount=v;}});
   }
+  if(d.editReserved){
+    const k=d.editReserved;openSheet({kicker:ACC[k].name,title:'¿Cuánto querés dejar reservado?',amount:allocation(k),onSave:v=>{S.accounts[k].reserved=v;}});
+  }
   if('rate'in d)openSheet({kicker:'tipo de cambio',title:'¿A cuánto está el dólar?',amount:S.rate,onSave:v=>{S.rate=v;}});
   if('newOb'in d){
     const m=S.months.find(x=>x.key===d.newOb);if(m)m.obligations.push({id:uid(),name:'nuevo gasto',amount:0,reserved:0,source:'mp'});
@@ -448,7 +453,7 @@ document.addEventListener('click',e=>{
   }
   if('delOb'in d){
     const card=t.closest('[data-month]'),m=S.months.find(x=>x.key===card.dataset.month);
-    if(m){m.obligations=m.obligations.filter(o=>o.id!==card.dataset.ob);save();renderReservas();refreshDashboard();}
+    if(m){const gone=m.obligations.find(o=>o.id===card.dataset.ob);if(gone)S.accounts[gone.source].reserved=Math.max(0,(Number(S.accounts[gone.source].reserved)||0)-(Number(gone.reserved)||0));m.obligations=m.obligations.filter(o=>o.id!==card.dataset.ob);save();renderReservas();refreshDashboard();}
   }
   if('newIncome'in d){S.incomes.push({id:uid(),name:'nuevo cliente',month:'',amount:0,cur:'ARS',received:false,dest:'mp'});save();renderIngresos();}
   if('delIncome'in d){const x=findIncome(t);if(x){if(x.received)S.accounts[x.dest].amount-=x.amount;S.incomes=S.incomes.filter(i=>i.id!==x.id);save();render();}}
