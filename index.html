@@ -118,7 +118,6 @@ h2{font-family:var(--serif);font-weight:400;font-size:clamp(42px,9vw,58px);line-
       <textarea id="cmd-in" rows="3" placeholder="saqué 5.000 de mercado pago…"></textarea>
       <div class="cmd-actions"><button type="button" id="mic">● hablar</button><button type="submit" id="cmd-send">enviar</button></div>
     </form>
-    <div id="log"></div>
   </section>
   <section id="ahora" class="tab"></section>
   <section id="reservas" class="tab"></section>
@@ -255,11 +254,9 @@ function runCmd(){
   const snap=JSON.stringify(S);let r;
   try{r=interpret(txt)}catch(e){r={ok:false,msg:'algo falló, probá de nuevo'}}
   if(r.ok){undoStack.push(snap);if(undoStack.length>10)undoStack.shift();inp.value=''}
-  S.log=[{q:txt,msg:r.msg,ok:r.ok},...S.log].slice(0,8);save();render();
+  save();render();
 }
-function renderLog(){
-  $('#log').innerHTML=S.log.map((l,i)=>`<div class="log"><p class="q">${esc(l.q||'')}</p><p class="a ${l.ok?'':'bad'}">${esc(l.msg)}${i===0&&l.ok&&undoStack.length?' · <button class="small-action" data-undo>deshacer</button>':''}</p></div>`).join('');
-}
+
 $('#cmd').addEventListener('submit',e=>{e.preventDefault();runCmd()});
 $('#cmd-in').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runCmd()}});
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
@@ -348,7 +345,7 @@ function renderIngresos(){
 function render(){
   const d=new Date();
   $('#fecha').textContent=`${DIAS[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()]} de ${d.getFullYear()}`;
-  renderAhora();renderReservas();renderIngresos();renderLog();
+  renderAhora();renderReservas();renderIngresos();
 }
 function findIncome(el){const r=el.closest('.item[data-income]');return r&&S.incomes.find(x=>x.id===r.dataset.income)}
 document.addEventListener('input',e=>{
@@ -403,10 +400,6 @@ document.addEventListener('click',e=>{
     document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b===t));
     document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id===d.tab));
     window.scrollTo(0,0);return;
-  }
-  if('undo'in d){
-    if(undoStack.length){S=JSON.parse(undoStack.pop());S.log=[{q:'',msg:'deshecho',ok:true},...S.log.slice(1)];save();render()}
-    return;
   }
   if(d.add){const k=d.add;openSheet({kicker:ACC[k].name,title:'Sumar dinero a la cuenta',amount:0,onSave:v=>{S.accounts[k].amount+=v;S.accounts[k].last={v,t:Date.now()}}})}
   if(d.edit){const k=d.edit;openSheet({kicker:ACC[k].name,title:'Corregir saldo total',amount:S.accounts[k].amount,onSave:v=>{S.accounts[k].amount=v}})}
