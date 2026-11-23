@@ -52,6 +52,7 @@ h2{font-family:var(--serif);font-weight:400;font-size:clamp(42px,9vw,58px);line-
 .month-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:9px}
 .month-head strong{font-family:var(--serif);font-size:30px;font-weight:400}
 .month-head span{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.month-head{flex-wrap:wrap}.month-tools{display:flex;align-items:center;gap:12px}.month-tools button{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);text-decoration:underline;text-underline-offset:3px}.month-body[hidden]{display:none!important}.month-head .month-total{font-family:var(--mono);font-size:10px;letter-spacing:0;text-transform:none;color:var(--ink)}
 .month-summary{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px}
 .bar{height:5px;background:rgba(25,24,21,.13);position:relative;margin:9px 0 12px;overflow:hidden}
 .bar i,.ob-bar i{position:absolute;left:0;top:0;height:100%;background:var(--green)}
@@ -165,8 +166,8 @@ const DEF={
 let S=null;
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!S.accounts||!S.months||!S.incomes)S=JSON.parse(JSON.stringify(DEF));
-S.log=S.log||[];
-{const old=S.months;S.months=Array.from({length:4},(_,i)=>{const k=monthKey(i);return old.find(m=>m.key===k)||makeMonth(k,i===0)});}
+S.log=S.log||[];S.collapsedExpenses=S.collapsedExpenses||[];S.collapsedIncome=S.collapsedIncome||[];S.incomeMonthKeys=S.incomeMonthKeys||[];
+{const old=S.months;S.months=old;}
 S.incomes.forEach(x=>{if(!x.mk)x.mk=mkFromText(x.month)});
 for(const k of ['mp','ef','pp'])if(S.accounts[k].reserved==null)S.accounts[k].reserved=S.months.reduce((a,m)=>a+m.obligations.reduce((b,o)=>b+(o.source===k?(Number(o.reserved)||0):0),0),0);
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
@@ -195,7 +196,7 @@ const coverage=m=>totalForMonth(m)>0?Math.min(1,reservedForMonth(m)/totalForMont
 const incSum=(mk,cur,rec)=>S.incomes.filter(x=>x.mk===mk&&x.cur===cur&&x.received===rec).reduce((a,x)=>a+x.amount,0);
 const pendingTotal=c=>S.incomes.filter(x=>!x.received&&x.cur===c).reduce((a,x)=>a+x.amount,0);
 const receivedTotal=c=>S.incomes.filter(x=>x.received&&x.cur===c).reduce((a,x)=>a+x.amount,0);
-const incMonths=()=>[...new Set([...S.months.map(m=>m.key),...S.incomes.map(x=>x.mk)])].sort();
+const incMonths=()=>[...new Set([...S.incomeMonthKeys,...S.months.map(m=>m.key),...S.incomes.map(x=>x.mk)])].sort();
 
 /* ---------- actualizar: interpreta texto libre ---------- */
 const ACCRX={mp:/mercado ?pago|\bmp\b/,ef:/efectivo|\bcash\b|billetera/,pp:/paypal|\bpp\b/};
@@ -298,12 +299,14 @@ function obligationHTML(m,o){
 }
 function renderReservas(){
   $('#reservas').innerHTML=`<header class="sec-h"><h2>Gastos</h2></header>
-    ${S.months.map(m=>`<section class="month-card" data-month-card="${m.key}">
-      <div class="month-head"><strong>${cap(monthLabel(m.key))}</strong><span>${pct(coverage(m))} cubierto</span></div>
+    ${S.months.map(m=>{const collapsed=S.collapsedExpenses.includes(m.key);return `<section class="month-card" data-month-card="${m.key}">
+      <div class="month-head"><strong>${cap(monthLabel(m.key))}</strong><div class="month-tools"><span class="month-total">${ars(reservedForMonth(m))} abonados</span><button data-collapse-exp="${m.key}">${collapsed?'maximizar':'minimizar'}</button><button data-delete-exp-month="${m.key}">eliminar</button></div></div>
+      <div class="month-body" ${collapsed?'hidden':''}>
       <div class="month-summary"><span>abonado ${ars(reservedForMonth(m))} de ${ars(totalForMonth(m))}</span><span>resta ${ars(Math.max(0,totalForMonth(m)-reservedForMonth(m)))}</span></div>
       <div class="bar ${coverage(m)<1?'warn':''}"><i style="width:${coverage(m)*100}%"></i></div>
       ${m.obligations.map(o=>obligationHTML(m,o)).join('')}
-      <button class="add" data-new-ob="${m.key}">+ agregar gasto</button></section>`).join('')}`;
+      <button class="add" data-new-ob="${m.key}">+ agregar gasto</button></div></section>`}).join('')}
+    <button class="add" data-create-month="expenses">+ crear mes</button>`;
 }
 function refreshMonth(key){
   const m=S.months.find(x=>x.key===key),card=document.querySelector(`[data-month-card="${key}"]`);if(!m||!card)return;
@@ -332,11 +335,12 @@ function renderIngresos(){
   const mks=incMonths();
   const part=(mk,rec)=>[['ARS',incSum(mk,'ARS',rec)],['USD',incSum(mk,'USD',rec)]].filter(([,v])=>v>0).map(([c,v])=>money(v,c)).join(' · ')||'—';
   $('#ingresos').innerHTML=`<header class="sec-h"><h2>Ingresos</h2></header>
-    ${mks.map(mk=>{const items=S.incomes.filter(x=>x.mk===mk);const pend=items.filter(x=>!x.received).length;
-      return `<section class="month-card"><div class="month-head"><strong>${cap(monthLabel(mk))}</strong><span>${pend?pend+' pendiente'+(pend>1?'s':''):items.length?'todo cobrado':''}</span></div>
-      <div class="month-summary"><span>pendiente ${part(mk,false)}</span><span>cobrado ${part(mk,true)}</span></div>
+    ${mks.map(mk=>{const items=S.incomes.filter(x=>x.mk===mk);const pend=items.filter(x=>!x.received).length;const collapsed=S.collapsedIncome.includes(mk);const totalArs=incSum(mk,'ARS',true),totalUsd=incSum(mk,'USD',true);const total=[totalArs?money(totalArs,'ARS'):null,totalUsd?money(totalUsd,'USD'):null].filter(Boolean).join(' · ')||'sin cobros';
+      return `<section class="month-card" data-income-month="${mk}"><div class="month-head"><strong>${cap(monthLabel(mk))}</strong><div class="month-tools"><span class="month-total">${total==='sin cobros'?total:total+' cobrados'}</span><button data-collapse-inc="${mk}">${collapsed?'maximizar':'minimizar'}</button><button data-delete-inc-month="${mk}">eliminar</button></div></div>
+      <div class="month-body" ${collapsed?'hidden':''}><div class="month-summary"><span>pendiente ${part(mk,false)}</span><span>cobrado ${part(mk,true)}</span></div>
       ${items.map(x=>incomeHTML(x,mks)).join('')}
-      <button class="add" data-new-income="${mk}">+ agregar ingreso</button></section>`}).join('')}
+      <button class="add" data-new-income="${mk}">+ agregar ingreso</button></div></section>`}).join('')}
+    <button class="add" data-create-month="income">+ crear mes</button>
     <div class="sum"><span class="kicker">pendiente en pesos</span><span class="v">${ars(pendingTotal('ARS'))}</span></div>
     <div class="sum"><span class="kicker">pendiente en dólares</span><span class="v">${usd(pendingTotal('USD'))}</span></div>
     <div class="sum"><span class="kicker">ya cobrado · pesos</span><span class="v">${ars(receivedTotal('ARS'))}</span></div>
@@ -396,6 +400,11 @@ $('#sh-cancel').onclick=closeSheet;$('#scrim').onclick=closeSheet;
 document.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t||t.closest('#sheet'))return;
   const d=t.dataset;
+  if(d.collapseExp){S.collapsedExpenses=S.collapsedExpenses.includes(d.collapseExp)?S.collapsedExpenses.filter(k=>k!==d.collapseExp):[...S.collapsedExpenses,d.collapseExp];save();renderReservas();return}
+  if(d.collapseInc){S.collapsedIncome=S.collapsedIncome.includes(d.collapseInc)?S.collapsedIncome.filter(k=>k!==d.collapseInc):[...S.collapsedIncome,d.collapseInc];save();renderIngresos();return}
+  if(d.createMonth){const raw=prompt('¿Qué mes querés crear? Escribí mes y año (por ejemplo: marzo 2027).');if(raw){const mk=mkFromText(raw);if(d.createMonth==='expenses'){if(!S.months.some(m=>m.key===mk))S.months.push(makeMonth(mk,false));S.months.sort((a,b)=>a.key.localeCompare(b.key));save();renderReservas()}else{if(!incMonths().includes(mk))S.incomeMonthKeys.push(mk);save();renderIngresos()}}return}
+  if(d.deleteExpMonth){if(confirm(`¿Eliminar ${monthLabel(d.deleteExpMonth)} y todos sus gastos?`)){const m=S.months.find(x=>x.key===d.deleteExpMonth);if(m)m.obligations.forEach(o=>{S.accounts[o.source].reserved=Math.max(0,allocation(o.source)-(Number(o.reserved)||0))});S.months=S.months.filter(m=>m.key!==d.deleteExpMonth);S.collapsedExpenses=S.collapsedExpenses.filter(k=>k!==d.deleteExpMonth);save();renderReservas();renderAhora()}return}
+  if(d.deleteIncMonth){if(confirm(`¿Eliminar ${monthLabel(d.deleteIncMonth)} y todos sus ingresos?`)){S.incomes.filter(x=>x.mk===d.deleteIncMonth&&x.received).forEach(x=>{S.accounts[x.dest].amount-=x.amount});S.incomes=S.incomes.filter(x=>x.mk!==d.deleteIncMonth);S.incomeMonthKeys=S.incomeMonthKeys.filter(k=>k!==d.deleteIncMonth);S.collapsedIncome=S.collapsedIncome.filter(k=>k!==d.deleteIncMonth);save();render()}return}
   if(d.tab){
     document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b===t));
     document.querySelectorAll('.tab').forEach(s=>s.classList.toggle('on',s.id===d.tab));
